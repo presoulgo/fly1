@@ -1,0 +1,24 @@
+
+name: Fly.io Scheduled Restart
+
+on:
+  schedule:
+    # 每天北京时间 03:00（UTC 19:00）
+    - cron: "0 19 * * *"
+  workflow_dispatch:
+
+jobs:
+  restart:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      - name: Restart Fly Machine
+        run: |
+          flyctl machine restart "$FLY_MACHINE_ID" \
+            -a "$FLY_APP_NAME"
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          FLY_APP_NAME: ${{ secrets.FLY_APP_NAME }}
+          FLY_MACHINE_ID: ${{ secrets.FLY_MACHINE_ID }}
